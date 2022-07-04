@@ -1,0 +1,11 @@
+{
+    "description": "The most basic fish in the universe. Not very cool",
+    "name": "NFTruite",
+    "attributes": [
+        {
+            "trait_type": "coolness",
+            "value": "bof"
+        }
+    ],
+    "image": "https: //les-mega.cool/0.png"
+}
