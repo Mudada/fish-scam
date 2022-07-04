@@ -92,6 +92,10 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
         return urlToPaSqualeNb[_url];
     }
 
+    function contractURI() public view returns (string memory) {
+        return "https://les-mega.cool/metadata.json";
+    }
+
     // setters
 
     function setFishMintingChance(uint256 thousandth) public {
