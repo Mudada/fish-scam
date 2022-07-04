@@ -4,52 +4,155 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
+interface PhisherAPI {
+    // add a fiosh on a defined url
+    function addBigFish(string calldata _url) external payable;
 
-contract TestContract is ERC1155 {
+    // add a big big fish on an url
+    function addPaSquale(string calldata _url) external payable;
+}
+
+interface FishedFisherAPI {
+    // go phishing
+    // maybe earn a token, most likely wont
+    function fish(string calldata _url) external payable;
+
+    // sacrifice phish to OpenPoseidong for bigger fishes maybe
+    function burn(
+        address _from,
+        uint256 _id,
+        uint256 _amount
+    ) external;
+}
+
+interface ScammerAPI {
+    function getFishCount(string calldata _url) external view returns (uint256);
+
+    function getBigFishCount(string calldata _url)
+        external
+        view
+        returns (uint256);
+
+    function getPaSqualeCount(string calldata _url)
+        external
+        view
+        returns (uint256);
+
+    function setFishMintingChance(uint256 thousandth) external;
+
+    function setBigFishMintingChance(uint256 thousandth) external;
+
+    function setPaSqualeMintingChance(uint256 thousandt) external;
+
+}
+
+contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
+    // nfts
     uint256 public constant NFTRUITE = 0;
     uint256 public constant NFT_BIG_TRUITE = 1;
-    uint256 public constant NFTRUITE_CHANCE = 33;
-    uint256 public constant NFT_BIG_TRUITE_CHANCE = 3;
-    uint256 public constant MIN_PAYMENT_TRUITE = 1;
-    uint256 public constant MIN_PAYMENT_ADD_TRUITE = 10;
+    uint256 public constant NFT_PA_SQUALE = 2;
 
+    // probability of phishing
+    uint256 internal NFTRUITE_CHANCE = 1000;
+    uint256 internal NFT_BIG_TRUITE_CHANCE = 1000;
+    uint256 internal NFT_PA_SQUALE_CHANCE = 1000;
+
+    // $$$
+    uint256 internal constant UNIT = 1000000000000000;
+    uint256 internal constant ETH_UNIT = 1000000000000000000;
+    uint256 internal constant MIN_PAYMENT_TRUITE = 1;
+    uint256 internal constant MIN_PAYMENT_ADD_BIG_TRUITE = 10;
+    uint256 internal constant MIN_PAYMENT_ADD_PA_SQUALE = 100;
+
+    // state
     uint256 randNonce = 0;
+    // fish count by url
+    mapping(string => uint256) internal urlToBigTruiteNb;
+    mapping(string => uint256) internal urlToTruiteNb;
+    mapping(string => uint256) internal urlToPaSqualeNb;
 
-    mapping(string => uint) public urlToBigTruiteNb;
+    // getters for API consumption
+    function getFishCount(string calldata _url) public view returns (uint256) {
+        return urlToTruiteNb[_url];
+    }
+
+    function getBigFishCount(string calldata _url)
+        public
+        view
+        returns (uint256)
+    {
+        return urlToBigTruiteNb[_url];
+    }
+
+    function getPaSqualeCount(string calldata _url)
+        public
+        view
+        returns (uint256)
+    {
+        return urlToPaSqualeNb[_url];
+    }
+
+    // setters
+
+    function setFishMintingChance(uint256 thousandth) public {
+        NFTRUITE_CHANCE = thousandth;
+    }
+
+    function setBigFishMintingChance(uint256 thousandth) public {
+        NFT_BIG_TRUITE_CHANCE = thousandth;
+    }
+
+    function setPaSqualeMintingChance(uint256 thousandt) public {
+        NFT_PA_SQUALE_CHANCE = thousandt;
+    }
 
     function rand(string calldata _url) internal returns (uint256) {
         randNonce++;
         return
             uint256(keccak256(abi.encodePacked(_url, msg.sender, randNonce))) %
-            100;
+            1000;
     }
 
-    // mint a fish ( maybe ) = phishing for users
     function fish(string calldata _url) public payable {
-        require(msg.value >= MIN_PAYMENT_TRUITE, "Insufficient payment");
+        require(
+            msg.value >= MIN_PAYMENT_TRUITE * UNIT,
+            "Insufficient payment : pay at least {MIN_PAYMENT_TRUITE * (UNIT / ETH_UNIT)}"
+        );
         uint256 r = rand(_url);
         if (r < NFTRUITE_CHANCE) {
-            if (r < NFT_BIG_TRUITE_CHANCE) {
-                if (urlToBigTruiteNb[_url] > 0) {
-                    _mint(msg.sender, NFT_BIG_TRUITE, 1, "");
-                    urlToBigTruiteNb[_url] = urlToBigTruiteNb[_url] - 1;
-                }
+            if (r < NFT_BIG_TRUITE_CHANCE && urlToBigTruiteNb[_url] > 0) {
+                _mint(msg.sender, NFT_BIG_TRUITE, 1, "");
+                urlToBigTruiteNb[_url] = urlToBigTruiteNb[_url] - 1;
             } else {
                 _mint(msg.sender, NFTRUITE, 1, "");
+                // todo mayve mint pasquale ?
             }
         }
-    }   
+    }
 
-    // setup phishing on a website
     function addBigFish(string calldata _url) public payable {
-        require(msg.value >= MIN_PAYMENT_ADD_TRUITE, "Insufficient payment for adding big fish");
+        require(
+            msg.value >= MIN_PAYMENT_ADD_BIG_TRUITE * UNIT,
+            "Insufficient payment for adding big fish : pay at least {MIN_PAYMENT_ADD_BIG_TRUITE * (UNIT / ETH_UNIT)}"
+        );
         urlToBigTruiteNb[_url] = urlToBigTruiteNb[_url] + 1;
     }
 
-    // burn a token => fish with a bait => mint a new one
-    function burn(address _from, uint256 _id, uint256 _amount) public {
+    function addPaSquale(string calldata _url) public payable {
+        require(
+            msg.value >= MIN_PAYMENT_ADD_PA_SQUALE * UNIT,
+            "Insufficient payment for adding a PaSquale : Insufficient payment for adding big fish : pay at least {MIN_PAYMENT_ADD_PA_SQUALE * (UNIT / ETH_UNIT)}"
+        );
+        urlToPaSqualeNb[_url] = urlToPaSqualeNb[_url] + 1;
+    }
+
+    function burn(
+        address _from,
+        uint256 _id,
+        uint256 _amount
+    ) public {
         _burn(_from, _id, _amount);
-        // mint a new one
+        // TODO mint a new one
     }
 
     constructor() ERC1155("https://les-mega.cool/{id}.json") {}
