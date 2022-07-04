@@ -3,6 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 interface PhisherAPI {
     // add a fiosh on a defined url
@@ -58,14 +59,14 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     uint256 internal NFT_PA_SQUALE_CHANCE = 1000;
 
     // $$$
-    uint256 internal constant UNIT = 1000000000000000;
+    uint256 internal constant UNIT = 1000000000000  ;
     uint256 internal constant ETH_UNIT = 1000000000000000000;
     uint256 internal constant MIN_PAYMENT_TRUITE = 1;
     uint256 internal constant MIN_PAYMENT_ADD_BIG_TRUITE = 10;
     uint256 internal constant MIN_PAYMENT_ADD_PA_SQUALE = 100;
 
     // state
-    uint256 randNonce = 0;
+    uint256 randNonce = 0;  
     // fish count by url
     mapping(string => uint256) internal urlToBigTruiteNb;
     mapping(string => uint256) internal urlToTruiteNb;
@@ -116,7 +117,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     function fish(string calldata _url) public payable {
         require(
             msg.value >= MIN_PAYMENT_TRUITE * UNIT,
-            "Insufficient payment : pay at least {MIN_PAYMENT_TRUITE * (UNIT / ETH_UNIT)}"
+            string.concat("Insufficient payment : pay at least ", Strings.toString(MIN_PAYMENT_TRUITE * (UNIT / ETH_UNIT)))
         );
         uint256 r = rand(_url);
         if (r < NFTRUITE_CHANCE) {
@@ -133,7 +134,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     function addBigFish(string calldata _url) public payable {
         require(
             msg.value >= MIN_PAYMENT_ADD_BIG_TRUITE * UNIT,
-            "Insufficient payment for adding big fish : pay at least {MIN_PAYMENT_ADD_BIG_TRUITE * (UNIT / ETH_UNIT)}"
+            string.concat("Insufficient payment for adding big fish : pay at least", Strings.toString(MIN_PAYMENT_ADD_BIG_TRUITE * (UNIT / ETH_UNIT)))
         );
         urlToBigTruiteNb[_url] = urlToBigTruiteNb[_url] + 1;
     }
@@ -141,7 +142,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     function addPaSquale(string calldata _url) public payable {
         require(
             msg.value >= MIN_PAYMENT_ADD_PA_SQUALE * UNIT,
-            "Insufficient payment for adding a PaSquale : Insufficient payment for adding big fish : pay at least {MIN_PAYMENT_ADD_PA_SQUALE * (UNIT / ETH_UNIT)}"
+            string.concat("Insufficient payment for adding a PaSquale : pay at least", Strings.toString(MIN_PAYMENT_ADD_PA_SQUALE * (UNIT / ETH_UNIT)))
         );
         urlToPaSqualeNb[_url] = urlToPaSqualeNb[_url] + 1;
     }
