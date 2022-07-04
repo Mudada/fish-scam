@@ -43,7 +43,6 @@ interface ScammerAPI {
     function setBigFishMintingChance(uint256 thousandth) external;
 
     function setPaSqualeMintingChance(uint256 thousandt) external;
-
 }
 
 contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
@@ -72,13 +71,19 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     mapping(string => uint256) internal urlToPaSqualeNb;
 
     // getters for API consumption
-    function getFishCount(string calldata _url) public view returns (uint256) {
+    function getFishCount(string calldata _url)
+        public
+        view
+        override
+        returns (uint256)
+    {
         return urlToTruiteNb[_url];
     }
 
     function getBigFishCount(string calldata _url)
         public
         view
+        override
         returns (uint256)
     {
         return urlToBigTruiteNb[_url];
@@ -87,6 +92,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     function getPaSqualeCount(string calldata _url)
         public
         view
+        override
         returns (uint256)
     {
         return urlToPaSqualeNb[_url];
@@ -98,15 +104,15 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
 
     // setters
 
-    function setFishMintingChance(uint256 thousandth) public {
+    function setFishMintingChance(uint256 thousandth) public override {
         NFTRUITE_CHANCE = thousandth;
     }
 
-    function setBigFishMintingChance(uint256 thousandth) public {
+    function setBigFishMintingChance(uint256 thousandth) public override {
         NFT_BIG_TRUITE_CHANCE = thousandth;
     }
 
-    function setPaSqualeMintingChance(uint256 thousandt) public {
+    function setPaSqualeMintingChance(uint256 thousandt) public override {
         NFT_PA_SQUALE_CHANCE = thousandt;
     }
 
@@ -117,7 +123,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
             1000;
     }
 
-    function fish(string calldata _url) public payable {
+    function fish(string calldata _url) public payable override {
         require(
             msg.value >= MIN_PAYMENT_TRUITE * UNIT,
             "Insufficient payment : pay at least {MIN_PAYMENT_TRUITE * (UNIT / ETH_UNIT)}"
@@ -134,7 +140,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
         }
     }
 
-    function addBigFish(string calldata _url) public payable {
+    function addBigFish(string calldata _url) public payable override {
         require(
             msg.value >= MIN_PAYMENT_ADD_BIG_TRUITE * UNIT,
             "Insufficient payment for adding big fish : pay at least {MIN_PAYMENT_ADD_BIG_TRUITE * (UNIT / ETH_UNIT)}"
@@ -142,7 +148,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
         urlToBigTruiteNb[_url] = urlToBigTruiteNb[_url] + 1;
     }
 
-    function addPaSquale(string calldata _url) public payable {
+    function addPaSquale(string calldata _url) public payable override {
         require(
             msg.value >= MIN_PAYMENT_ADD_PA_SQUALE * UNIT,
             "Insufficient payment for adding a PaSquale : Insufficient payment for adding big fish : pay at least {MIN_PAYMENT_ADD_PA_SQUALE * (UNIT / ETH_UNIT)}"
@@ -154,7 +160,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
         address _from,
         uint256 _id,
         uint256 _amount
-    ) public {
+    ) public override {
         _burn(_from, _id, _amount);
         // TODO mint a new one
     }
