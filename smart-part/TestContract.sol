@@ -1,6 +1,6 @@
 // contracts/GameItems.sol
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.15;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
@@ -117,7 +117,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     function fish(string calldata _url) public payable {
         require(
             msg.value >= MIN_PAYMENT_TRUITE * UNIT,
-            string.concat("Insufficient payment : pay at least ", Strings.toString(MIN_PAYMENT_TRUITE * (UNIT / ETH_UNIT)))
+            string.concat("Insufficient payment : pay at least ", Strings.toString(MIN_PAYMENT_TRUITE * ((1.0 * UNIT ) / (1.0 * ETH_UNIT))))
         );
         uint256 r = rand(_url);
         if (r < NFTRUITE_CHANCE) {
@@ -134,7 +134,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     function addBigFish(string calldata _url) public payable {
         require(
             msg.value >= MIN_PAYMENT_ADD_BIG_TRUITE * UNIT,
-            string.concat("Insufficient payment for adding big fish : pay at least", Strings.toString(MIN_PAYMENT_ADD_BIG_TRUITE * (UNIT / ETH_UNIT)))
+            string.concat("Insufficient payment for adding big fish : pay at least", Strings.toString(MIN_PAYMENT_ADD_BIG_TRUITE * (( 1.0 * UNIT) / (1.0 * ETH_UNIT))))
         );
         urlToBigTruiteNb[_url] = urlToBigTruiteNb[_url] + 1;
     }
@@ -142,7 +142,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     function addPaSquale(string calldata _url) public payable {
         require(
             msg.value >= MIN_PAYMENT_ADD_PA_SQUALE * UNIT,
-            string.concat("Insufficient payment for adding a PaSquale : pay at least", Strings.toString(MIN_PAYMENT_ADD_PA_SQUALE * (UNIT / ETH_UNIT)))
+            string.concat("Insufficient payment for adding a PaSquale : pay at least", Strings.toString(MIN_PAYMENT_ADD_PA_SQUALE * (( 1.0 * UNIT) / (1.0 * ETH_UNIT))))
         );
         urlToPaSqualeNb[_url] = urlToPaSqualeNb[_url] + 1;
     }
@@ -150,7 +150,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     function burn(
         address _from,
         uint256 _id,
-        uint256 _amount
+        uint256 _amount 
     ) public {
         _burn(_from, _id, _amount);
         // TODO mint a new one
