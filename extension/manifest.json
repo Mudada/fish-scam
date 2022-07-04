@@ -1,0 +1,9 @@
+{
+  "name": "Fi$h",
+  "description": "Peches ta mer mdr",
+  "version": "0.0.1",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "extension.html"
+  }
+}

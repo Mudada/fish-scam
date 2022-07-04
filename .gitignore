@@ -1,2 +1,5 @@
+node_modules
+dist/**
+
 smart-part/node_modules
 smart-part/bin/
