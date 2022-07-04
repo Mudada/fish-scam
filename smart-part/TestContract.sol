@@ -59,7 +59,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     uint256 internal NFT_PA_SQUALE_CHANCE = 1000;
 
     // $$$
-    uint256 internal constant UNIT = 1000000000000  ;
+    uint256 internal constant UNIT = 1000000000000;
     uint256 internal constant ETH_UNIT = 1000000000000000000;
     uint256 internal constant MIN_PAYMENT_TRUITE = 1;
     uint256 internal constant MIN_PAYMENT_ADD_BIG_TRUITE = 10;
@@ -117,7 +117,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     function fish(string calldata _url) public payable {
         require(
             msg.value >= MIN_PAYMENT_TRUITE * UNIT,
-            string.concat("Insufficient payment : pay at least ", Strings.toString(MIN_PAYMENT_TRUITE * ((1.0 * UNIT ) / (1.0 * ETH_UNIT))))
+            ("Insufficient payment : min fyshing fee is a thousandth of ETH")
         );
         uint256 r = rand(_url);
         if (r < NFTRUITE_CHANCE) {
@@ -134,7 +134,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     function addBigFish(string calldata _url) public payable {
         require(
             msg.value >= MIN_PAYMENT_ADD_BIG_TRUITE * UNIT,
-            string.concat("Insufficient payment for adding big fish : pay at least", Strings.toString(MIN_PAYMENT_ADD_BIG_TRUITE * (( 1.0 * UNIT) / (1.0 * ETH_UNIT))))
+            string.concat("Insufficient payment for adding big fish : pay at least a hundredth of an ETH")
         );
         urlToBigTruiteNb[_url] = urlToBigTruiteNb[_url] + 1;
     }
@@ -142,7 +142,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     function addPaSquale(string calldata _url) public payable {
         require(
             msg.value >= MIN_PAYMENT_ADD_PA_SQUALE * UNIT,
-            string.concat("Insufficient payment for adding a PaSquale : pay at least", Strings.toString(MIN_PAYMENT_ADD_PA_SQUALE * (( 1.0 * UNIT) / (1.0 * ETH_UNIT))))
+            string.concat("A PaSquale is not some peon fish : please pay at least an ETH")
         );
         urlToPaSqualeNb[_url] = urlToPaSqualeNb[_url] + 1;
     }
