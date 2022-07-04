@@ -5,5 +5,13 @@
   "manifest_version": 3,
   "action": {
     "default_popup": "extension.html"
+  },
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
   }
 }
