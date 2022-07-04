@@ -1,0 +1,6 @@
+{
+    "solidity.defaultCompiler": "localNodeModule",
+    "solidity.compileUsingRemoteVersion": "latest",
+    "solidity.packageDefaultDependenciesDirectory": "smart-part/node_modules",
+    "solidity.packageDefaultDependenciesContractsDirectory": "smart-part/contracts"
+}
