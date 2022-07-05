@@ -1,5 +1,4 @@
 require("@nomiclabs/hardhat-waffle");
-require("@nomiclabs/hardhat-ethers");
 require("hardhat-laika");
 
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -31,6 +30,12 @@ const GOERLI_PRIVATE_KEY = "529b92e40886f20dcb928b67b1708d5561438a7d0b15be016b11
  */
 module.exports = {
   solidity: "0.8.15",
+  paths: {
+    sources: "./contracts",
+    tests: "./test",
+    cache: "./cache",
+    artifacts: "./artifacts"
+  },
   networks: {
     goerli: {
       url: `https://eth-goerli.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
