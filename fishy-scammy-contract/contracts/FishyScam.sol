@@ -1,4 +1,4 @@
-// contracts/GameItems.sol
+// contracts/FishyScam.sol
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.15;
 

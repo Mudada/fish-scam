@@ -7,11 +7,18 @@
     "default_popup": "extension.html"
   },
   "permissions": [
+    "storage",
+    "scripting",
     "tabs",
-    "storage"
+    "notifications"
   ],
-  "background": {
-    "scripts": ["background.js"],
-    "persistent": false
-  }
+  "icons": {
+    "16": "/assets/icon.png",
+    "48": "/assets/icon.png",
+    "128": "/assets/icon.png"
+  },
+  "host_permissions": [
+    "http://*/",
+    "https://*/"
+  ]
 }
