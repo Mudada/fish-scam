@@ -167,7 +167,7 @@ function App() {
   const sendTransaction = () => {
     try {
       const gazPrice = "0xf4240"
-      const priceValue = "0xf4240"
+      const priceValue = "0x38D7EA4C68000"
       console.log("send transaction with this account : ", account)
       connector.sendTransaction(
         {
@@ -175,7 +175,7 @@ function App() {
           to: '0x2744c8Dc2CeA7159E7Ec14449075fF22D3870bef',
           data: '0xe6985b3c0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000b6578616d706c652e636f6d000000000000000000000000000000000000000000',
           value: priceValue,
-          gas: gazPrice
+          // gas: gazPrice
         });
     } catch (e) {
       // Handle the error as you see fit
