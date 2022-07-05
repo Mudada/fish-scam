@@ -1,5 +1,4 @@
 import './App.css';
-import logo from "./logo.png";
 import WalletConnect from "@walletconnect/client";
 import QRCodeModal from "@walletconnect/qrcode-modal";
 import styled from 'styled-components';
@@ -58,9 +57,53 @@ function App() {
   // add state variables & hooks here
   const [connector, setConnector] = useState(null);
   const [fetching, setFetching] = useState(false);
+  const [account, setAccount] = useState(null);
+  const [chainId, setChainId] = useState(null);
+  const [supported, setSupported] = useState(false);
+  const [network, setNetwork] = useState(null);
+  const [balance, setBalance] = useState(null);
+  const [symbol, setSymbol] = useState(null);
+
 
   useEffect(() => {
+
+    const onConnect = async (chainId, address) => {
+      setAccount(address);
+
+      const networkData = SUPPORTED_NETWORKS.filter((network) => network.chain_id === chainId)[0];
+
+      if (!networkData) {
+        setSupported(false);
+      } else {
+        setSupported(true);
+        setNetwork(networkData.name);
+        setSymbol(networkData.native_currency.symbol);
+        setChainId(chainId);
+
+        // 1. Create an Ethers provider
+        const provider = new ethers.providers.StaticJsonRpcProvider(networkData.rpc_url, {
+          chainId,
+          name: networkData.name
+        });
+
+        // 2. Get the account balance
+        const balance = await provider.getBalance(address);
+        // 3. Format the balance
+        const formattedBalance = ethers.utils.formatEther(balance);
+        // 4. Save the balance to state
+        setBalance(formattedBalance);
+      }
+    };
+
+
     // add logic with side effects
+    const refreshData = async () => {
+      const { chainId, accounts } = connector;
+      await onConnect(chainId, accounts[0]);
+      setFetching(false);
+    }
+    console.log("UseEffect")
+    console.log("connector", connector)
     if (connector) {
       connector.on("connect", async (error, payload) => {
         if (error) {
@@ -69,6 +112,8 @@ function App() {
         }
 
         const { chainId, accounts } = payload.params[0];
+        console.log(chainId)
+        console.log(accounts)
         await onConnect(chainId, accounts[0]);
         setFetching(false);
       });
@@ -82,32 +127,30 @@ function App() {
       });
 
       // check state variables here & if needed refresh the app
+      // If any of these variables do not exist and the connector is connected, refresh the data
+      console.log("ChainId : ", chainId)
+      console.log("Account : ", account)
+      // If any of these variables do not exist and the connector is connected, refresh the data
+      if ((!chainId || !account || !balance) && connector.connected) {
+        console.log("Data should be refreshed")
+        refreshData();
+      }
+
     }
 
-    const onConnect = async (chainId, connectedAccount) => {
-      // handle connect event
-    };
 
-    const refreshData = async () => {
-      const { chainId, accounts } = connector;
-      await onConnect(chainId, accounts[0]);
-      setFetching(false);
-    }
-  }, [connector]);
+  }, [connector, chainId, account, balance]);
 
   const connect = async () => {
-    console.log("click on connect")
     setFetching(true);
-    console.log(fetching)
     // 1. Create connector
     const connector = new WalletConnect({ bridge: "https://bridge.walletconnect.org", qrcodeModal: QRCodeModal });
-  
+
     // 2. Update the connector state
     setConnector(connector);
-  
+
     // 3. If not connected, create a new session
     if (!connector.connected) {
-      console.log("are we here")
       await connector.createSession();
     }
   };
@@ -120,31 +163,79 @@ function App() {
     resetApp();
   };
 
-  const sendTransaction = async () => {
-    // add send transaction logic
+
+  const sendTransaction = () => {
+    try {
+      const gazPrice = "0xf4240"
+      const priceValue = "0xf4240"
+      console.log("send transaction with this account : ", account)
+      connector.sendTransaction(
+        {
+          from: account,
+          to: '0x2744c8Dc2CeA7159E7Ec14449075fF22D3870bef',
+          data: '0xe6985b3c0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000b6578616d706c652e636f6d000000000000000000000000000000000000000000',
+          value: priceValue,
+          gas: gazPrice
+        });
+    } catch (e) {
+      // Handle the error as you see fit
+      console.error(e);
+    }
   };
+
 
   const resetApp = () => {
     setConnector(null);
     setFetching(false);
+    setAccount(null);
+    setChainId(null);
+    setSupported(false);
+    setNetwork(null);
+    setSymbol(null);
+    setBalance(null)
   };
 
   return (
     <Wrapper>
-      <img src={logo} alt="logo" />
       <Content>
         <Header>
-          Moonbeam WalletConnect Demo App
+          FISH FISH FISH
         </Header>
 
         {connector && !fetching ? (
+          <LoadedData>
+            <Data>
+              <strong>Connected Account: </strong>
+              {account}
+            </Data>
+            <Data>
+              <strong>Chain ID: </strong>
+              {chainId}
+            </Data>
+            {supported ? (
+              <>
+                <Data>
+                  <strong>Network: </strong>
+                  {network}
+                </Data>
+                <Data>
+                  <strong>Balance: </strong>
+                  {balance} {symbol}
+                </Data>
+                <OutlinedButton onClick={sendTransaction}>Fish</OutlinedButton>
+              </>
+            ) : (
+              <strong>
+                Network not supported. Please disconnect, switch networks, and connect again.
+              </strong>
+            )}
             <OutlinedButton onClick={killSession}>Disconnect</OutlinedButton>
-            ) : (<Button onClick={connect}>Connect My</Button>)
-        }
-
+          </LoadedData>
+        ) : (
+          <Button onClick={connect}>Connect Wallet</Button>
+        )}
       </Content>
     </Wrapper>
   );
 }
-
 export default App;
