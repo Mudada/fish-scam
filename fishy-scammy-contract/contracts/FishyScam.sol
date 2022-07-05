@@ -99,8 +99,15 @@ contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
         return urlToPaSqualeNb[_url];
     }
 
-    function contractURI() public view returns (string memory) {
-        return "https://les-mega.cool/metadata.json";
+    function contractURI() public pure returns (string memory) {
+        return "https://les-mega.cool/metadata";
+    }
+
+    function uri(uint256 _tokenId) public view virtual override returns (string memory) {
+        return string.concat(
+            "https://les-mega.cool/",
+            Strings.toString(_tokenId)
+        );
     }
 
     // setters
