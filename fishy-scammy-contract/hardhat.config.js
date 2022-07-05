@@ -36,6 +36,7 @@ module.exports = {
     cache: "./cache",
     artifacts: "./artifacts"
   },
+  defaultNetwork: "localhost",
   networks: {
     goerli: {
       url: `https://eth-goerli.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
