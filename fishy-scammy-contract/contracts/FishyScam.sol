@@ -163,10 +163,12 @@ contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
         if (!fishedSomething && r > (1000 - NFT_PA_SQUALE_CHANCE) && urlToPaSqualeNb[_url] > 0) {
             _mint(msg.sender, NFT_PA_SQUALE, 1, "");
             fishedSomething = true;
+            urlToPaSqualeNb[_url] -= 1;
         }
         if (!fishedSomething && r > (1000 - NFT_BIG_TRUITE_CHANCE) && urlToBigTruiteNb[_url] > 0) {
             _mint(msg.sender, NFT_BIG_TRUITE, 1, "");
             fishedSomething = true;
+            urlToBigTruiteNb[_url] -= 1;
         } 
         if (!fishedSomething && r > (1000 - NFTRUITE_CHANCE)) {
             _mint(msg.sender, NFTRUITE, 1, "");
