@@ -46,7 +46,7 @@ interface ScammerAPI {
     function setPaSqualeMintingChance(uint256 thousandt) external;
 }
 
-contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
+contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     // nfts
     uint256 public constant NFTRUITE = 0;
     uint256 public constant NFT_BIG_TRUITE = 1;
