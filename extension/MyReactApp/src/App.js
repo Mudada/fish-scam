@@ -168,11 +168,12 @@ function App() {
     try {
       const gazPrice = "0xf4240"
       const priceValue = "0x38D7EA4C68000"
+      const smartContractAddress = "0xf817d97da72b4f515d74f2dd2e2235b9c22aabf4"
       console.log("send transaction with this account : ", account)
       connector.sendTransaction(
         {
           from: account,
-          to: '0x2744c8Dc2CeA7159E7Ec14449075fF22D3870bef',
+          to: smartContractAddress,
           data: '0xe6985b3c0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000b6578616d706c652e636f6d000000000000000000000000000000000000000000',
           value: priceValue,
           // gas: gazPrice
