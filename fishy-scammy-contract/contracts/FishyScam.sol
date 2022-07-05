@@ -48,6 +48,8 @@ interface ScammerAPI {
     function setBigFishMintingChance(uint256 thousandth) external;
 
     function setPaSqualeMintingChance(uint256 thousandt) external;
+
+    function simulateFishingChances(address _address, string calldata _url) external view returns (uint256);
 }
 
 contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
@@ -68,12 +70,16 @@ contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     uint256 internal constant MIN_PAYMENT_ADD_BIG_TRUITE = 10;
     uint256 internal constant MIN_PAYMENT_ADD_PA_SQUALE = 100;
 
+    // sacrifice system
+    uint256 internal constant BURN_BONUS = 5;
+
     // state
     uint256 randNonce = 0;
     // fish count by url
     mapping(string => uint256) internal urlToBigTruiteNb;
     mapping(string => uint256) internal urlToTruiteNb;
     mapping(string => uint256) internal urlToPaSqualeNb;
+    mapping(address => uint256) internal adressToSacrifices;
 
     // getters for API consumption
     function getFishCount(string calldata _url)
@@ -101,6 +107,10 @@ contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
         returns (uint256)
     {
         return urlToPaSqualeNb[_url];
+    }
+
+    function simulateFishingChances(address _address, string calldata _url) public view returns (uint256) {
+        return applyBurnBonus(_address, randNoChange(_url));
     }
 
     function contractURI() public pure returns (string memory) {
@@ -134,6 +144,10 @@ contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
 
     function rand(string calldata _url) internal returns (uint256) {
         randNonce++;
+        return randNoChange(_url);
+    }
+
+    function randNoChange(string calldata _url) internal view returns (uint256) {
         return
             uint256(keccak256(abi.encodePacked(_url, msg.sender, randNonce))) %
             1000;
@@ -144,20 +158,26 @@ contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
             msg.value >= MIN_PAYMENT_TRUITE * UNIT,
             ("Insufficient payment : min fyshing fee is a thousandth of ETH")
         );
-        uint256 r = rand(_url);
+        uint256 r = applyBurnBonus(msg.sender, rand(_url));
         bool fishedSomething = false;
-        if (!fishedSomething && r < NFT_PA_SQUALE_CHANCE && urlToPaSqualeNb[_url] > 0) {
+        if (!fishedSomething && r > (1000 - NFT_PA_SQUALE_CHANCE) && urlToPaSqualeNb[_url] > 0) {
             _mint(msg.sender, NFT_PA_SQUALE, 1, "");
             fishedSomething = true;
         }
-        if (!fishedSomething && r < NFT_BIG_TRUITE_CHANCE && urlToBigTruiteNb[_url] > 0) {
+        if (!fishedSomething && r > (1000 - NFT_BIG_TRUITE_CHANCE) && urlToBigTruiteNb[_url] > 0) {
             _mint(msg.sender, NFT_BIG_TRUITE, 1, "");
             fishedSomething = true;
-        }
-        if (!fishedSomething && r < NFTRUITE_CHANCE) {
+        } 
+        if (!fishedSomething && r > (1000 - NFTRUITE_CHANCE)) {
             _mint(msg.sender, NFTRUITE, 1, "");
             fishedSomething = true;
         }
+    }
+
+    function applyBurnBonus(address _address, uint256 _chances) internal view returns(uint256) {
+        uint256 sacrifices = adressToSacrifices[_address];
+        uint256 chancesWithBonus = _chances + ( sacrifices * BURN_BONUS );
+        return chancesWithBonus;
     }
 
     function addBigFish(string calldata _url) public payable override {
@@ -185,8 +205,13 @@ contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
         uint256 _id,
         uint256 _amount
     ) public override {
+        uint256 balanceBefore = balanceOf(_from, 0);
         _burn(_from, _id, _amount);
-        // TODO mint a new one
+        uint256 balanceAfter = balanceOf(_from, 0);
+        if (balanceAfter < balanceBefore) {
+            adressToSacrifices[_from] = adressToSacrifices[_from] + _amount ;
+        }
+        
     }
 
     constructor() ERC1155("https://les-mega.cool/{id}") {}
