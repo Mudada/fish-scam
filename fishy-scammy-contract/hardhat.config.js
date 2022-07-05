@@ -12,6 +12,17 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
+// Go to https://www.alchemyapi.io, sign up, create
+// a new App in its dashboard, and replace "KEY" with its key
+const ALCHEMY_API_KEY = "bht657Ha_dWcqAcMh5ISGM1Mn4KCx_kO";
+
+// Replace this private key with your Goerli account private key
+// To export your private key from Metamask, open Metamask and
+// go to Account Details > Export Private Key
+// Be aware of NEVER putting real Ether into testing accounts
+const GOERLI_PRIVATE_KEY = "529b92e40886f20dcb928b67b1708d5561438a7d0b15be016b11cf3ce0821433";
+
+
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
 
@@ -21,10 +32,9 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 module.exports = {
   solidity: "0.8.15",
   networks: {
-    hardhat: {
-      accounts: {
-        
-      }
+    goerli: {
+      url: `https://eth-goerli.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+      accounts: [`${GOERLI_PRIVATE_KEY}`]
     }
   }
 };
