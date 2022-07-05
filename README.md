@@ -25,3 +25,9 @@ The ERC-1155 token is burned by:
 | Name     |
 |----------|
 | NFTRUITE |
+
+## Mastermind guide
+
+### Contract
+
+Install Hardhat

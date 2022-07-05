@@ -1,6 +1,5 @@
 node_modules
 dist/**
-
-smart-part/node_modules
-smart-part/bin/
 .DS_Store
+fishy-scammy-contract/cache/*
+fishy-scammy-contract/artifacts/*

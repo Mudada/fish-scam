@@ -1,9 +1,11 @@
 // contracts/GameItems.sol
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.15;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
+// Phishers are using bait to attract fishers
 interface PhisherAPI {
     // add a fiosh on a defined url
     function addBigFish(string calldata _url) external payable;
@@ -12,6 +14,8 @@ interface PhisherAPI {
     function addPaSquale(string calldata _url) external payable;
 }
 
+// Fishers are actually the bottom of the foodchain
+// They feed their ETH to everyone above
 interface FishedFisherAPI {
     // go phishing
     // maybe earn a token, most likely wont
@@ -25,6 +29,7 @@ interface FishedFisherAPI {
     ) external;
 }
 
+// The top of the top
 interface ScammerAPI {
     function getFishCount(string calldata _url) external view returns (uint256);
 
@@ -45,7 +50,7 @@ interface ScammerAPI {
     function setPaSqualeMintingChance(uint256 thousandt) external;
 }
 
-contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
+contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     // nfts
     uint256 public constant NFTRUITE = 0;
     uint256 public constant NFT_BIG_TRUITE = 1;
@@ -57,14 +62,14 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     uint256 internal NFT_PA_SQUALE_CHANCE = 1000;
 
     // $$$
-    uint256 internal constant UNIT = 1000000000000000;
+    uint256 internal constant UNIT = 1000000000000;
     uint256 internal constant ETH_UNIT = 1000000000000000000;
     uint256 internal constant MIN_PAYMENT_TRUITE = 1;
     uint256 internal constant MIN_PAYMENT_ADD_BIG_TRUITE = 10;
     uint256 internal constant MIN_PAYMENT_ADD_PA_SQUALE = 100;
 
     // state
-    uint256 randNonce = 0;
+    uint256 randNonce = 0;  
     // fish count by url
     mapping(string => uint256) internal urlToBigTruiteNb;
     mapping(string => uint256) internal urlToTruiteNb;
@@ -98,8 +103,15 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
         return urlToPaSqualeNb[_url];
     }
 
-    function contractURI() public view returns (string memory) {
-        return "https://les-mega.cool/metadata.json";
+    function contractURI() public pure returns (string memory) {
+        return "https://les-mega.cool/metadata";
+    }
+
+    function uri(uint256 _tokenId) public view virtual override returns (string memory) {
+        return string.concat(
+            "https://les-mega.cool/",
+            Strings.toString(_tokenId)
+        );
     }
 
     // setters
@@ -126,24 +138,28 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     function fish(string calldata _url) public payable override {
         require(
             msg.value >= MIN_PAYMENT_TRUITE * UNIT,
-            "Insufficient payment : pay at least {MIN_PAYMENT_TRUITE * (UNIT / ETH_UNIT)}"
+            ("Insufficient payment : min fyshing fee is a thousandth of ETH")
         );
         uint256 r = rand(_url);
-        if (r < NFTRUITE_CHANCE) {
-            if (r < NFT_BIG_TRUITE_CHANCE && urlToBigTruiteNb[_url] > 0) {
-                _mint(msg.sender, NFT_BIG_TRUITE, 1, "");
-                urlToBigTruiteNb[_url] = urlToBigTruiteNb[_url] - 1;
-            } else {
-                _mint(msg.sender, NFTRUITE, 1, "");
-                // todo mayve mint pasquale ?
-            }
+        bool fishedSomething = false;
+        if (!fishedSomething && r < NFT_PA_SQUALE_CHANCE && urlToPaSqualeNb[_url] > 0) {
+            _mint(msg.sender, NFT_PA_SQUALE, 1, "");
+            fishedSomething = true;
+        }
+        if (!fishedSomething && r < NFT_BIG_TRUITE_CHANCE && urlToBigTruiteNb[_url] > 0) {
+            _mint(msg.sender, NFT_BIG_TRUITE, 1, "");
+            fishedSomething = true;
+        }
+        if (!fishedSomething && r < NFTRUITE_CHANCE) {
+            _mint(msg.sender, NFTRUITE, 1, "");
+            fishedSomething = true;
         }
     }
 
     function addBigFish(string calldata _url) public payable override {
         require(
             msg.value >= MIN_PAYMENT_ADD_BIG_TRUITE * UNIT,
-            "Insufficient payment for adding big fish : pay at least {MIN_PAYMENT_ADD_BIG_TRUITE * (UNIT / ETH_UNIT)}"
+            string.concat("Insufficient payment for adding big fish : pay at least a hundredth of an ETH")
         );
         urlToBigTruiteNb[_url] = urlToBigTruiteNb[_url] + 1;
     }
@@ -151,7 +167,7 @@ contract FishyScamImpl is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     function addPaSquale(string calldata _url) public payable override {
         require(
             msg.value >= MIN_PAYMENT_ADD_PA_SQUALE * UNIT,
-            "Insufficient payment for adding a PaSquale : Insufficient payment for adding big fish : pay at least {MIN_PAYMENT_ADD_PA_SQUALE * (UNIT / ETH_UNIT)}"
+            string.concat("A PaSquale is not some peon fish : please pay at least an ETH")
         );
         urlToPaSqualeNb[_url] = urlToPaSqualeNb[_url] + 1;
     }
