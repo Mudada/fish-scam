@@ -1,4 +1,4 @@
-// contracts/GameItems.sol
+// contracts/FishyScam.sol
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.15;
 
@@ -146,11 +146,19 @@ contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
         );
         uint256 r = rand(_url);
         bool fishedSomething = false;
-        if (!fishedSomething && r < NFT_PA_SQUALE_CHANCE && urlToPaSqualeNb[_url] > 0) {
+        if (
+            !fishedSomething &&
+            r < NFT_PA_SQUALE_CHANCE &&
+            urlToPaSqualeNb[_url] > 0
+        ) {
             _mint(msg.sender, NFT_PA_SQUALE, 1, "");
             fishedSomething = true;
         }
-        if (!fishedSomething && r < NFT_BIG_TRUITE_CHANCE && urlToBigTruiteNb[_url] > 0) {
+        if (
+            !fishedSomething &&
+            r < NFT_BIG_TRUITE_CHANCE &&
+            urlToBigTruiteNb[_url] > 0
+        ) {
             _mint(msg.sender, NFT_BIG_TRUITE, 1, "");
             fishedSomething = true;
         }
