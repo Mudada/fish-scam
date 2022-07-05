@@ -69,7 +69,7 @@ contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     uint256 internal constant MIN_PAYMENT_ADD_PA_SQUALE = 100;
 
     // state
-    uint256 randNonce = 0;  
+    uint256 randNonce = 0;
     // fish count by url
     mapping(string => uint256) internal urlToBigTruiteNb;
     mapping(string => uint256) internal urlToTruiteNb;
@@ -107,11 +107,15 @@ contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
         return "https://les-mega.cool/metadata";
     }
 
-    function uri(uint256 _tokenId) public view virtual override returns (string memory) {
-        return string.concat(
-            "https://les-mega.cool/",
-            Strings.toString(_tokenId)
-        );
+    function uri(uint256 _tokenId)
+        public
+        view
+        virtual
+        override
+        returns (string memory)
+    {
+        return
+            string.concat("https://les-mega.cool/", Strings.toString(_tokenId));
     }
 
     // setters
@@ -159,7 +163,9 @@ contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     function addBigFish(string calldata _url) public payable override {
         require(
             msg.value >= MIN_PAYMENT_ADD_BIG_TRUITE * UNIT,
-            string.concat("Insufficient payment for adding big fish : pay at least a hundredth of an ETH")
+            string.concat(
+                "Insufficient payment for adding big fish : pay at least a hundredth of an ETH"
+            )
         );
         urlToBigTruiteNb[_url] = urlToBigTruiteNb[_url] + 1;
     }
@@ -167,7 +173,9 @@ contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
     function addPaSquale(string calldata _url) public payable override {
         require(
             msg.value >= MIN_PAYMENT_ADD_PA_SQUALE * UNIT,
-            string.concat("A PaSquale is not some peon fish : please pay at least an ETH")
+            string.concat(
+                "A PaSquale is not some peon fish : please pay at least an ETH"
+            )
         );
         urlToPaSqualeNb[_url] = urlToPaSqualeNb[_url] + 1;
     }
@@ -181,5 +189,5 @@ contract FishyScam is ERC1155, PhisherAPI, FishedFisherAPI, ScammerAPI {
         // TODO mint a new one
     }
 
-    constructor() ERC1155("https://les-mega.cool/{id}.json") {}
+    constructor() ERC1155("https://les-mega.cool/{id}") {}
 }
